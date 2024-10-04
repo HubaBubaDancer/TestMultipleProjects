@@ -1,14 +1,24 @@
+using Microsoft.EntityFrameworkCore;
+using TestMultipleProjects;
+using TestMultipleProjects.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
-var connectionString = builder.Configuration.GetConnectionString("AuthDbContextConnection") ?? throw new InvalidOperationException("Connection string 'AuthDbContextConnection' not found.");
-// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("TestDbContextConnection") ?? throw new InvalidOperationException("Connection string 'AuthDbContextConnection' not found.");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "AuthTest", Version = "v1" });
 });
+
+
+builder.Services.AddTransient<IUserHandler, UserHandler>();
+
 
 var app = builder.Build();
 
