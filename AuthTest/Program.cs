@@ -1,5 +1,13 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using AuthTest.Areas.Identity.Data;
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("AuthDbContextConnection") ?? throw new InvalidOperationException("Connection string 'AuthDbContextConnection' not found.");
 
+builder.Services.AddDbContext<AuthDbContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddDefaultIdentity<AplicationUser>(o => o.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<AuthDbContext>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
